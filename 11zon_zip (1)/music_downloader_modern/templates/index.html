@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎵 Playlist & Video Downloader>Modern Media Downloader</title>
+  <link rel="stylesheet" href="/static/style.css">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+  <script src="/static/script.js" defer></script>
+  <script src="{{ url_for('static', filename='script.js') }}?v=1"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+   <script>
+  let selectedSongs = [];
+
+function searchPlaylist() {
+  const name = document.getElementById('playlistName').value;
+  fetch(`/search_playlist?name=${encodeURIComponent(name)}`)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById('songsList');
+      container.innerHTML = '';
+      data.songs.forEach(song => {
+        container.innerHTML += `
+          <div>
+            <input type="checkbox" value="${song.videoId}" data-title="${song.title}">
+            ${song.title}
+          </div>
+        `;
+      });
+    });
+}
+function toggleSelectAllSongs(checkbox) {
+  const checkboxes = document.querySelectorAll('#songsList input[type="checkbox"]');
+  checkboxes.forEach(cb => cb.checked = checkbox.checked);
+}
+
+function addToDownloadCard() {
+  const checkboxes = document.querySelectorAll('#songsList input[type=checkbox]:checked');
+  checkboxes.forEach(cb => {
+    const song = { id: cb.value, title: cb.dataset.title };
+    if (!selectedSongs.some(s => s.id === song.id)) {
+      selectedSongs.push(song);
+    }
+  });
+
+  const card = document.getElementById('downloadCard');
+  card.innerHTML = '';
+  selectedSongs.forEach(song => {
+    card.innerHTML += `<div>${song.title}</div>`;
+  });
+}
+
+function downloadAll() {
+  const quality = document.getElementById('quality').value;
+  fetch('/download_all', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ songs: selectedSongs, quality })
+  })
+    .then(res => res.blob())
+    .then(blob => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'songs.zip';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000); // Clean up
+    });
+}
+
+    async function pollProgress(task_id) {
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const interval = setInterval(async () => {
+            const res = await fetch(`/progress/${task_id}`);
+            const data = await res.json();
+            progressBar.value = data.progress;
+            progressText.textContent = `Progress: ${data.progress}%`;
+            if (data.progress === 100 && data.download_url) {
+                clearInterval(interval);
+                progressText.innerHTML = `<a href="${data.download_url}" class="text-blue-600 underline">Download ZIP</a>`;
+            }
+        }, 1500);
+    }
+
+   async function downloadVideo() {
+        const url = document.getElementById('videoUrl').value;
+    
+        const videoFormat = document.getElementById('videoFormat').value;
+        let audioQuality = '320';
+        if (videoFormat === '360') audioQuality = '128';
+        else if (videoFormat === '480') audioQuality = '256';
+        else if (videoFormat === '720') audioQuality = '320';
+        else if (videoFormat === '720') audioQuality = '320';
+        else if (videoFormat === '1080') audioQuality = '320';
+        else if (videoFormat === '2k') audioQuality = '320';
+        else if (videoFormat === '4k') audioQuality = '320';
+        // ...etc
+        const progressText = document.getElementById('videoProgressText');
+        progressText.style.display = '';
+        progressText.textContent = 'Downloading... Please wait.';
+        const response = await fetch('/download_video', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({url, format, audioQuality})
+        });
+        const data = await response.json();
+        progressText.innerHTML = `<a href="${data.download_url}" class="text-blue-600 underline">Download Video</a>`;
+        window.location.href = data.download_url;
+    }
+
+    async function pollVideoProgress(task_id) {
+        const progressBar = document.getElementById('videoProgressBar');
+        const progressText = document.getElementById('videoProgressText');
+        const interval = setInterval(async () => {
+            const res = await fetch(`/progress/${task_id}`);
+            const data = await res.json();
+            progressBar.value = data.progress;
+            progressText.textContent = `Progress: ${data.progress}%`;
+            if (data.progress === 100 && data.download_url) {
+                clearInterval(interval);
+                progressText.innerHTML = `<a href="${data.download_url}" class="text-blue-600 underline">Download Video</a>`;
+            }
+        }, 1500);
+    }
+
+    let allFormats = [];
+    let currentUrl = "";
+
+    async function showVideoInfo() {
+    const url = document.getElementById('videoUrl').value;
+    if (!url) return alert('Please enter a YouTube URL.');
+    currentUrl = url;
+
+    // Show panel and loading state immediately
+    const panel = document.getElementById('videoInfoPanel');
+    panel.style.display = 'block';
+    panel.innerHTML = `
+      <div style="background:#fff;border:2px solid #232946;padding:18px 14px;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.09);position:relative;">
+        <span style="font-weight:bold;" id="modalVideoTitle">Loading...</span>
+        <button onclick="closeVideoInfoPanel()" style="position:absolute;top:8px;right:12px;font-size:1.5em;background:none;border:none;cursor:pointer;color:#232946;">&times;</button>
+        <div id="panelBody">
+          <div style="padding:20px;">Loading formats...<br>Please wait a few seconds.</div>
+        </div>
+      </div>
+    `;
+
+    try {
+        const res = await fetch('/video_info', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({url})
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        document.getElementById('modalVideoTitle').textContent = data.title;
+        allFormats = data.formats;
+        renderFormatTable(data, 'video');
+    } catch (e) {
+        document.getElementById('panelBody').innerHTML = `<div style="color:red;padding:20px;">Could not load video info.<br>${e.message}</div>`;
+    }
+}
+
+function closeVideoInfoPanel() {
+    document.getElementById('videoInfoPanel').style.display = 'none';
+}
+
+    async function downloadSelectedFormat(url, format_id, tab) {
+        let format = format_id;
+        // Find the selected format object
+        const f = allFormats.find(x => x.format_id === format_id);
+        let mergeFormat = 'mp4';
+        if (tab === 'video' && f) {
+            if (f.acodec === 'none') {
+                // If MP4, merge with best audio as mp4; if WebM, merge as webm
+                if (f.ext === 'webm') {
+                    format = `${format_id}+bestaudio[ext=webm]/bestaudio`;
+                    mergeFormat = 'webm';
+                } else {
+                    format = `${format_id}+bestaudio[ext=mp4]/bestaudio`;
+                    mergeFormat = 'mp4';
+                }
+            } else {
+                mergeFormat = f.ext;
+            }
+        }
+        const res = await fetch('/download_video', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({url, format, mergeFormat})
+        });
+        const data = await res.json();
+        window.location.href = data.download_url;
+        closeVideoInfoPanel();
+      }
+
+    async function downloadInstagram() {
+        const btn = document.getElementById('instaDownloadBtn');
+        btn.disabled = true;
+        btn.textContent = "Downloading...";
+        try {
+            const url = document.getElementById('instaUrl').value;
+            const quality = document.getElementById('instaQuality').value;
+            const res = await fetch('/download_instagram', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({url, quality})
+            });
+            if (res.ok && res.headers.get('Content-Type').includes('video')) {
+                const blob = await res.blob();
+                const a = document.createElement('a');
+                a.href = window.URL.createObjectURL(blob);
+                a.download = "instagram_video.mp4";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(a.href), 1000); // Clean up
+            } else {
+                const data = await res.json();
+                alert(data.error || "Download failed");
+            }
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Download Video";
+        }
+    }
+
+    </script>
+</head>
+<body>
+  <header>
+    <h1>🎵 Playlist & Video Downloader</h1>
+    <nav>
+      <body class="bg-gray-100 min-h-screen">
+        <div>
+            <a href="{{ url_for('history') }}" class="history-link">History</a>
+             <a href="{{ url_for('logout') }}" class="history-link">Logout</a>
+        </div>
+    <nav>
+        <span class="font-bold">
+           <button class="tab-button" onclick="showTab('playlist')">Playlist Downloader</button>
+      <button class="tab-button" onclick="showTab('video')">YouTube Video Downloader</button>
+      <button class="tab-button" onclick="showTab('ytmp3')">YouTube MP3 Video Downloader</button>
+<button class="tab-button" onclick="showTab('instagram')">Instagram Video Downloader</button>
+        </span>
+        
+    </nav>
+  </header>
+
+  <main>
+       <section id="playlistTab" class="tab-content">
+  <h2>Search Playlist</h2>
+  <input type="text" id="playlistName" placeholder="Enter playlist name">
+  <button onclick="searchPlaylist()">Search</button>
+  <br>
+  <label style="font-size:1.2em;display:flex;align-items:center;margin:10px 0;">
+    <input type="checkbox" id="selectAllSongs" style="width:24px;height:24px;margin-right:10px;" onclick="toggleSelectAllSongs(this)">
+    Select All
+  </label>
+  <div id="songsList">
+   
+  </div>
+  <button onclick="addToDownloadCard()">Add Selected Songs</button>
+  <h3>Selected Songs</h3>
+  <div id="downloadCard">
+    
+  </div>
+  <label for="quality">Quality:</label>
+  <select id="quality">
+    <option value="128">128 kbps</option>
+    <option value="320">320 kbps</option>
+  </select>
+  <button onclick="downloadAll()">Download All</button>
+</section>
+  
+<!-- YouTube Video Downloader Tab -->
+<section id="videoTab" class="tab-content" style="display:none;">
+  <h2 class="text-xl font-bold mb-4">Download YouTube Video</h2>
+  <input type="text" id="videoUrl" placeholder="Enter YouTube video URL" class="w-full px-3 py-2 border rounded mb-4">
+  <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-2" onclick="showVideoInfo()">Show Video Info</button>
+  <div id="videoInfoPanel" style="display:none; margin-top:16px;"></div>
+  <progress id="videoProgressBar" value="0" max="100" class="w-full mt-4" style="display:none"></progress>
+  <div id="videoProgressText" class="mt-2 text-center text-blue-700" style="display:none"></div>
+</section>
+
+<!-- YouTube MP3 Downloader Tab -->
+<section id="ytmp3Tab" class="tab-content" style="display:none;">
+  <h2>YouTube MP3 Video Downloader</h2>
+  <input type="text" id="ytmp3Url" placeholder="Enter YouTube video URL" class="w-full px-3 py-2 border rounded mb-4">
+  <label for="ytmp3Quality">Select MP3 Quality:</label>
+  <select id="ytmp3Quality">
+    <option value="128">128 kbps</option>
+    <option value="240">240 kbps</option>
+    <option value="280">280 kbps</option>
+    <option value="320">320 kbps</option>
+  </select>
+  <button onclick="downloadYtMp3()">Download MP3</button>
+  <div id="ytmp3Result" class="mt-2 text-center text-blue-700"></div>
+</section>
+
+<!-- Instagram Video Downloader Tab -->
+<section id="instagramTab" class="tab-content" style="display:none;">
+  <h2>Instagram Video Downloader</h2>
+  <input type="text" id="instaUrl" placeholder="Enter Instagram video URL" class="w-full px-3 py-2 border rounded mb-4">
+  <label for="instaQuality">Video Quality:</label>
+  <select id="instaQuality">
+    <option value="best">Best Quality (Auto)</option>
+  </select>
+  <button id="instaDownloadBtn" onclick="downloadInstagram()">Download Video</button>
+  <div id="instaResult" class="mt-2 text-center text-blue-700"></div>
+</section>
+
+  </main>
+  <div id="videoInfoModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:1000;">
+  <div style="background:#fff; margin:5vh auto; padding:20px; max-width:500px; border-radius:8px; position:relative; max-height:90vh; overflow-y:auto;">
+    <button onclick="closeVideoInfoModal()" style="position:absolute; top:10px; right:10px;">&times;</button>
+    <h3 id="modalVideoTitle"></h3>
+    <img id="modalVideoThumb" src="" alt="Thumbnail" style="width:100%; max-width:320px; margin-bottom:10px;">
+    <div style="margin-bottom:10px;">
+      <button onclick="showFormatTab('video')" id="tabVideo" class="tab-btn">Mp4</button>
+      <button onclick="showFormatTab('other')" id="tabOther" class="tab-btn">WebM</button>
+    </div>
+    <div id="modalFormatList" style="max-height:50vh; overflow-y:auto;"></div>
+  </div>
+</div>
+</body>
+</html>

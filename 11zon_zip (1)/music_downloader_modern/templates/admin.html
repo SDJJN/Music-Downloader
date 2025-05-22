@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <h2>All Registered Users</h2>
+    <table>
+        <tr><th>Username</th><th>Is Superuser</th></tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ 'Yes' if user.is_superuser else 'No' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>All Download History</h2>
+    <table>
+        <tr><th>User</th><th>Filename</th><th>Date</th></tr>
+        {% for d in downloads %}
+        <tr>
+            <td>{{ d.user.username }}</td>
+            <td>{{ d.filename }}</td>
+            <td>{{ d.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

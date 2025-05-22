@@ -1,0 +1,602 @@
+/* ASMR-inspired soft gradient background */
+body {
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+  color: #3d456e;
+}
+
+/* Equal width tab buttons with gap and responsive behavior */
+nav {
+  display: inline;
+  margin: auto;
+  padding :auto;
+  width :auto;
+  gap: 5px;
+}
+
+.tab-button {
+  flex: 10px 10px 10px 10px; /* all tabs take equal width, min 140px */
+  max-width: fit-content;
+min-width: none;
+  text-align: center;
+  background: linear-gradient(90deg, #a5b4fc 0%, #c7d2fe 100%);
+  color: #6c759b;
+  border: none;
+  padding: 12px 12px 12px 12px;
+  margin: 5px 5px 5px 5px;
+  border-radius: 8px 8px 8px 8px;
+  font-size: 1.08rem;
+  cursor: pointer;
+  font-weight: auto;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px rgba(112, 112, 228, 0.06);
+  display: inline;
+}
+
+
+/* History link top-left */
+.history-link {
+  flex: 10px 10px 10px 10px; /* all tabs take equal width, min 140px */
+  max-width: fit-content;
+min-width: none;
+  text-align: center;
+  background: linear-gradient(90deg, #a5b4fc 0%, #c7d2fe 100%);
+  color: #4d557a;
+  border: none;
+  padding: 12px 12px 12px 12px;
+  margin: 5px 5px 5px 5px;
+  border-radius: 8px 8px 8px 8px;
+  font-size: 1.08rem;
+  cursor: pointer;
+  font-weight: auto;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px rgba(112, 112, 228, 0.06);
+  display: inline;
+  float: right;
+  text-decoration:none;
+}
+
+.history-link:hover {
+  background: #6d6ee8;
+  color: #fff;
+}
+/* Header with soft blue */
+header {
+ background:  linear-gradient(120deg, #34495e 20%, #fff 120%);
+  padding: 28px 0 18px 0;
+  color: #fff;
+  box-shadow: 0 2px 16px rgba(109, 110, 232, 0.10);
+  padding: 20px;
+  text-align: center;
+  color: white;
+  width: auto;
+
+}
+
+.tab-button:hover, .tab-button.active {
+  background: linear-gradient(90deg, #6d6ee8 0%, #a5b4fc 100%);
+  color: #fff;
+}
+
+/* Main card */
+main {
+  padding: 36px 24px 32px 24px;
+  background: rgba(255,255,255,0.97);
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(109, 110, 232, 0.10);
+  margin:  auto 30px  auto  30px ;
+  max-width: auto;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inputs and selects */
+input[type="text"], select {
+  padding: 12px 14px;
+  margin: 12px 0 20px 0;
+  border-radius: 8px;
+  border: 1.5px solid #c7d2fe;
+  width: 100%;
+  max-width: 320px;
+  font-size: 1.08rem;
+  background: #f3f4f6;
+  color: #232946;
+  box-sizing: border-box;
+  text-align: center;
+  transition: border 0.2s;
+}
+
+input[type="text"]:focus, select:focus {
+  border-color: #6d6ee8;
+  outline: none;
+}
+
+/* Buttons */
+.action-button, .download-button, button {
+  background: linear-gradient(90deg, #6d6ee8 0%, #a5b4fc 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  cursor: pointer;
+  margin: 10px 0;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(109, 110, 232, 0.08);
+  transition: background 0.2s, color 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.action-button:hover, .download-button:hover, button:hover {
+  background: linear-gradient(90deg, #232946 0%, #6d6ee8 100%);
+  color: #fff;
+}
+
+/* card styles */
+ #downloadCard {
+  margin: 0px;
+  padding: 10px;
+  background-color: #f3f4f6;
+  border: 1px solid #e0e7ff;
+  border-radius: 8px;
+  text-align: left;
+  color: #232946;
+  font-size: 1.05rem;
+  box-shadow: 0 1px 4px rgba(109, 110, 232, 0.04);
+}
+#songsList div
+{
+  margin-left:10px;
+  margin-right:0px;
+  margin-top:0px;
+  margin-bottom:0px;
+  padding: 0px;
+  background-color: #f3f4f6;
+  border: 1px solid #e0e7ff;
+  border-radius: 8px solid black;
+  color: #232946;
+  font-size: 1.05rem;
+  box-shadow: rgba(109, 110, 232, 0.04);
+  width: auto;
+  padding: 12px 0px 12px 0px;
+  text-align: left;
+  justify-content: left;
+  align-items: left;
+}
+
+.data-title
+{
+  text-align: left;
+  margin: 10px;
+  padding: 10px;
+   background-color: #f3f4f6;
+}
+
+
+/* Playlist list: left-align items and allow long names to show */
+#songsList {
+  width: auto;
+  padding: 12px;
+  margin: 12px 0 18px 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  text-align: left; /* left align */
+}
+
+
+#songsList label input[type="checkbox"] {
+  width: 100%;
+   width: 22px;
+  height: 22px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: #232946;
+  word-break: break-word;
+  padding: 8px 0 8px 4px; /* left padding for space */
+  font-size: 1.12rem;     /* slightly larger text */
+}
+#songsList input[type="checkbox"] {
+  margin-right: 14px;
+  accent-color: #6d6ee8;
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+   padding: 8px 0 8px 4px;
+  /* Optional for smoother look: */
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(109, 110, 232, 0.10);
+}
+
+
+#songsList li {
+  width: 100%;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e7ff;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+#songsList li:last-child {
+  border-bottom: none;
+}
+
+
+
+#songsList label {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: #232946;
+  word-break: break-word;
+}
+
+/* Dashboard card style for song list */
+.dashboard-card, #songsList li {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 18px 12px 48px;
+  margin: 10px 0;
+  background: linear-gradient(90deg, #f3f4f6 60%, #e0e7ff 100%);
+  border-radius: 12px;
+  border: 1.5px solid #e0e7ff;
+  box-shadow: 0 2px 12px rgba(109, 110, 232, 0.08);
+  font-size: 1.12rem;
+  color: #232946;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: box-shadow 0.2s, border 0.2s;
+}
+
+.dashboard-card:hover, #songsList li:hover {
+  box-shadow: 0 4px 24px rgba(109, 110, 232, 0.18);
+  border-color: #6d6ee8;
+  background: linear-gradient(90deg, #e0e7ff 60%, #c7d2fe 100%);
+}
+
+/* Number badge for each card */
+.card-number {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #6d6ee8;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.08rem;
+  box-shadow: 0 2px 8px rgba(109, 110, 232, 0.10);
+  border: 2px solid #fff;
+}
+
+/* Checkbox alignment inside card */
+.dashboard-card label, #songsList label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  font-size: 1.08rem;
+  color: #232946;
+  cursor: pointer;
+  word-break: break-word;
+  padding-left: 0;
+}
+
+/* Responsive: full width on mobile */
+@media (max-width: 700px) {
+  .dashboard-card, #songsList li {
+    padding: 12px 12px 12px 44px;
+    font-size: 1rem;
+  }
+  .card-number {
+    left: 8px;
+    width: 24px;
+    height: 24px;
+    font-size: 0.98rem;
+  }
+}
+
+/* Progress bars */
+progress, .progress-bar {
+  width: 100%;
+  height: 18px;
+  margin: 16px 0;
+  border-radius: 10px;
+  background: #e0e7ff;
+  accent-color: #6d6ee8;
+}
+
+#videoProgressText, #ytmp3Result, #instaResult {
+  margin-top: 12px;
+  text-align: center;
+  color: #6d6ee8;
+  font-weight: 500;
+  font-size: 1.05rem;
+}
+
+/* Section and tab content centering */
+.tab-content, section, form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.tab-content h2, .tab-content h3, .tab-content button, .tab-content input, .tab-content select, .tab-content label {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive design */
+@media (max-width: 700px) {
+  main {
+    max-width: auto;
+    padding: 12px 2vw;
+  }
+  nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .tab-button {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 0;
+    border-radius: 8px;
+  }
+}
+
+#selectAllSongs {
+  accent-color: #6d6ee8;
+  margin-right: 8px;
+}
+
+/* Center auth container vertically and horizontally */
+.auth-container {
+  min-height: 100vh;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+}
+
+/* Auth box styling */
+.auth-box {
+  background: #fff;
+  padding: 36px 32px 28px 32px;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(109, 110, 232, 0.13);
+  width: 100%;
+  max-width: 550px;
+  min-height: 520px; /* Ensures both boxes are the same height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-box h2 {
+  margin-bottom: 24px;
+  color: #6d6ee8;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Consistent input box styling for login and register */
+.auth-box input[type="text"],
+.auth-box input[type="password"] {
+  width: auto;
+  max-width: 480px;
+  min-width: 450px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  border: 1.5px solid #c7d2fe;
+  font-size: 1.08rem;
+  background: #f3f4f6;
+  color: #232946;
+  box-sizing: border-box;
+  transition: border 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.auth-box input[type="text"]:focus,
+.auth-box input[type="password"]:focus {
+  border-color: #6d6ee8;
+  outline: none;
+}
+
+.auth-box button {
+  width: 100%;
+  background: linear-gradient(90deg, #6d6ee8 0%, #a5b4fc 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 0;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background 0.2s;
+}
+
+.auth-box button:hover {
+  background: linear-gradient(90deg, #232946 0%, #6d6ee8 100%);
+}
+
+.auth-link {
+  text-align: center;
+  font-size: 0.98rem;
+  color: #6d6ee8;
+}
+
+.auth-link a {
+  color: #6d6ee8;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.auth-link a:hover {
+  color: #232946;
+}
+
+.auth-error {
+  color: #e53e3e;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* History table styles */
+.history-table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 24px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(109, 110, 232, 0.08);
+  font-size: 1.06rem;
+}
+
+.history-table th, .history-table td {
+  padding: 14px 12px;
+  text-align: left;
+}
+
+.history-table th {
+  background: #e0e7ff;
+  color: #6d6ee8;
+  font-weight: 700;
+  border-bottom: 2px solid #c7d2fe;
+}
+
+.history-table tr:nth-child(even) {
+  background: #f3f4f6;
+}
+
+.history-table tr:hover {
+  background: #e0e7ff;
+}
+
+.download-link {
+  color: #6d6ee8;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.download-link:hover {
+  color: #232946;
+}
+
+/* Responsive: make table scrollable on small screens */
+@media (max-width: 700px) {
+  .history-table th, .history-table td {
+    padding: 10px 6px;
+    font-size: 0.98rem;
+  }
+}
+
+/* Video Info Modal Styles */
+.custom-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.45);
+  justify-content: center;
+  align-items: center;
+}
+.custom-modal.show {
+  display: flex;
+}
+.custom-modal-dialog {
+  background: #fff;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 96vw;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  position: relative;
+}
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px 0 18px;
+}
+.custom-modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #232946;
+  cursor: pointer;
+  font-weight: bold;
+  line-height: 1;
+}
+.custom-modal-close:hover {
+  color: #6d6ee8;
+}
+.custom-modal-body {
+  padding: 18px;
+  text-align: center;
+}
+.tab-btn {
+  margin: 0 6px;
+  padding: 6px 18px;
+  border: 1px solid #6d6ee8;
+  background: #fff;
+  color: #6d6ee8;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+.tab-btn.active, .tab-btn:hover {
+  background: #6d6ee8;
+  color: #fff;
+}
+
+#videoInfoPanel > div {
+  background: #fff;
+  border: 2px solid #232946;
+  padding: 18px 14px;
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+  position: relative;
+}
